@@ -1,0 +1,11 @@
+Move the show bookmark logic to new page.
+Update the UI to be more attractive specially the buttons.
+Remove the index header.
+Ability to login.
+save the bookmarks to DB instead of asyncStorage if logged in.
+Add ads at the bottom to get revenue.
+back up 2 more APIs in case one fails.
+search and integrate image quotes as well.
+different language quotes.
+Daily quote reminder.
+check if sharechat or similar has API and integrate to get the quotes from there.
