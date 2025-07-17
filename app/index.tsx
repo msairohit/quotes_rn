@@ -35,6 +35,12 @@ export default function Index() {
             >
               <Text style={[styles.buttonText, { color: theme.buttonText }]}>View Bookmarks</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: theme.button }]}
+              onPress={() => router.push("/share-quote")}
+            >
+              <Text style={[styles.buttonText, { color: theme.buttonText }]}>Share Your Quote</Text>
+            </TouchableOpacity>
             {/* Theme Switcher Dropdown */}
             <View style={{ marginTop: 10, alignItems: "center" }}>
               <TouchableOpacity
