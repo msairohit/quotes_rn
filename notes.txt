@@ -1,4 +1,5 @@
 Move the show bookmark logic to new page.
+Option to add users photo and name and share the quote as an image.
 Update the UI to be more attractive specially the buttons.
 Remove the index header.
 Ability to login.

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Button, FlatList, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 const App = () => {
     const [quote, setQuote] = useState('Loading...');
     const [author, setAuthor] = useState('');
@@ -78,26 +79,25 @@ const App = () => {
     }, []);
     return (
         <View style={styles.container}>
+            <Stack.Screen options={{ headerShown: false }} />
+            <View>
+                <Text style={styles.title}>Quotess</Text>
+            </View>
             <View style={styles.quoteBox}>
                 <Text style={styles.quote}>"{quote}"</Text>
                 <Text style={styles.author}>- {author}</Text>
             </View>
             <View style={styles.buttonContainer}>
-                <Button title="New Quote" onPress={fetchQuote} />
-                <Button title="Bookmark" onPress={bookmarkQuote} />
-                <Button title="Share" onPress={shareQuote} /> {/* Share functionality added */}
+                <TouchableOpacity style={styles.button} onPress={fetchQuote}>
+                    <Text style={styles.buttonText}>New Quote</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={bookmarkQuote}>
+                    <Text style={styles.buttonText}>Bookmark</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={shareQuote}>
+                    <Text style={styles.buttonText}>Share</Text>
+                </TouchableOpacity>
             </View>
-            <Text style={styles.bookmarkedTitle}>Bookmarked Quotes:</Text>
-            <FlatList
-                data={bookmarkedQuotes}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.bookmarkItem}>
-                        <Text style={styles.bookmarkQuote}>"{item.quote}"</Text>
-                        <Text style={styles.bookmarkAuthor}>- {item.author}</Text>
-                    </View>
-                )}
-            />
         </View>
     );
 };
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#e8f5e9', // Light green background
         padding: 20,
     },
     quoteBox: {
@@ -133,30 +133,43 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         marginTop: 10,
     },
+
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '100%',
         marginBottom: 20,
     },
+    button: {
+        backgroundColor: '#3498db',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 2,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     bookmarkedTitle: {
         fontSize: 20,
-        marginTop: 20,
     },
-    bookmarkItem: {
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 5,
-        marginVertical: 5,
-        width: '100%',
+    title: {
+        paddingTop: 60,
+        paddingBottom: 20,
+        paddingHorizontal: 16,
+        fontSize: 32,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#3498db',
     },
-    bookmarkQuote: {
-        fontSize: 16,
-        fontStyle: 'italic',
-    },
-    bookmarkAuthor: {
-        fontSize: 14,
-        textAlign: 'right',
-    },
+
 });
 export default App;
