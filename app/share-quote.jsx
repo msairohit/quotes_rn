@@ -1,9 +1,11 @@
 import * as ImagePicker from "expo-image-picker";
 import * as Sharing from "expo-sharing";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { captureRef } from "react-native-view-shot";
 import { useTheme } from "./ThemeContext";
+
+const screenWidth = Math.min(Dimensions.get("window").width, 340); // max 340 for design
 
 export default function ShareQuote() {
     const { theme } = useTheme();
@@ -11,11 +13,16 @@ export default function ShareQuote() {
     const [photo, setPhoto] = useState(null);
     const [quote, setQuote] = useState("Loading...");
     const [author, setAuthor] = useState("");
+    const [bgImage, setBgImage] = useState(null);
+    const [loadingQuote, setLoadingQuote] = useState(false);
+    const [loadingBg, setLoadingBg] = useState(false);
     const quoteCardRef = useRef(null);
+    const [cardHeight, setCardHeight] = useState(220); // default minimum
 
     useEffect(() => { fetchQuote(); }, []);
 
     const fetchQuote = async () => {
+        setLoadingQuote(true);
         try {
             const response = await fetch('https://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en');
             const data = await response.json();
@@ -25,6 +32,7 @@ export default function ShareQuote() {
             setQuote("Stay positive and keep moving forward!");
             setAuthor("Unknown");
         }
+        setLoadingQuote(false);
     };
 
     const pickImage = async () => {
@@ -36,6 +44,37 @@ export default function ShareQuote() {
         });
         if (!result.canceled) {
             setPhoto(result.assets[0].uri);
+        }
+    };
+
+    const addBackgroundImage = async () => {
+        setLoadingBg(true);
+        try {
+            const unsplashUrl = `https://source.unsplash.com/featured/${screenWidth}x${Math.round(cardHeight)}/?motivation,success,life`;
+            const response = await fetch(unsplashUrl, { method: "HEAD" });
+            if (response.ok) {
+                setBgImage(unsplashUrl);
+                return;
+            }
+            throw new Error("Unsplash failed");
+        } catch {
+            setBgImage(`https://picsum.photos/${screenWidth}/${Math.round(cardHeight)}?random=${Math.floor(Math.random() * 10000)}`);
+        }
+    };
+
+    const pickBackgroundImage = async () => {
+        setLoadingBg(true);
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [screenWidth, cardHeight],
+            quality: 1,
+        });
+        if (!result.canceled) {
+            setBgImage(result.assets[0].uri);
+            // Don't setLoadingBg(false) here!
+        } else {
+            setLoadingBg(false); // Only if user cancels
         }
     };
 
@@ -81,6 +120,24 @@ export default function ShareQuote() {
                     value={name}
                     onChangeText={setName}
                 />
+                <TouchableOpacity
+                    style={[styles.bgButton, { backgroundColor: theme.button }]}
+                    onPress={addBackgroundImage}
+                    disabled={loadingBg}
+                >
+                    <Text style={[styles.bgButtonText, { color: theme.buttonText }]}>
+                        {loadingBg ? "Loading..." : "Add Random Background"}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.bgButton, { backgroundColor: theme.button }]}
+                    onPress={pickBackgroundImage}
+                    disabled={loadingBg}
+                >
+                    <Text style={[styles.bgButtonText, { color: theme.buttonText }]}>
+                        {loadingBg ? "Loading..." : "Pick Your Own Background"}
+                    </Text>
+                </TouchableOpacity>
                 <View
                     style={[
                         styles.quoteCard,
@@ -92,12 +149,38 @@ export default function ShareQuote() {
                     ]}
                     ref={quoteCardRef}
                     collapsable={false}
+                    onLayout={e => setCardHeight(e.nativeEvent.layout.height)}
                 >
-                    {photo && <Image source={{ uri: photo }} style={styles.cardPhoto} />}
-                    <Text style={[styles.cardName, { color: theme.text }]}>{name}</Text>
-                    <Text style={[styles.cardLabel, { color: theme.text }]}>Quote:</Text>
-                    <Text style={[styles.cardQuote, { color: theme.text }]}>"{quote}"</Text>
-                    <Text style={[styles.cardAuthor, { color: theme.text }]}>- {author}</Text>
+                    {loadingBg && (
+                        <View style={styles.loaderOverlay}>
+                            <ActivityIndicator size="large" color={theme.button} />
+                        </View>
+                    )}
+                    {bgImage && cardHeight > 0 && (
+                        <Image
+                            source={{ uri: bgImage }}
+                            style={[styles.cardBgImage, { height: cardHeight }]}
+                            resizeMode="cover"
+                            onLoadEnd={() => setLoadingBg(false)}
+                        />
+                    )}
+                    <View style={styles.cardOverlay}>
+                        {photo && (
+                            <View style={styles.cardPhotoContainer}>
+                                <Image source={{ uri: photo }} style={styles.cardPhoto} />
+                            </View>
+                        )}
+                        <Text style={[styles.cardName, { color: theme.text }]}>{name}</Text>
+                        <Text style={[styles.cardLabel, { color: theme.text }]}>Quote:</Text>
+                        {loadingQuote ? (
+                            <ActivityIndicator size="small" color={theme.button} style={{ marginVertical: 10 }} />
+                        ) : (
+                            <>
+                                <Text style={[styles.cardQuote, { color: theme.text }]}>"{quote}"</Text>
+                                <Text style={[styles.cardAuthor, { color: theme.text }]}>- {author}</Text>
+                            </>
+                        )}
+                    </View>
                 </View>
                 <TouchableOpacity
                     style={[styles.shareButton, { backgroundColor: theme.button }]}
@@ -157,10 +240,23 @@ const styles = StyleSheet.create({
         marginBottom: 18,
         fontSize: 16,
     },
+    bgButton: {
+        borderRadius: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 18,
+        marginBottom: 16,
+        elevation: 2,
+    },
+    bgButtonText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        textAlign: "center",
+        letterSpacing: 0.5,
+    },
     quoteCard: {
-        width: "100%",
-        maxWidth: 340,
-        minHeight: 220,
+        width: screenWidth,
+        // height: cardHeight, // REMOVE this line
+        // minHeight: 220,       // Add a minimum height
         borderRadius: 18,
         padding: 18,
         alignItems: "center",
@@ -170,6 +266,21 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 6,
         backgroundColor: "#fff",
+        overflow: "hidden",
+    },
+    cardBgImage: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: screenWidth,
+        borderRadius: 18,
+        opacity: 0.35,
+    },
+    cardOverlay: {
+        // flex: 1,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
     },
     cardPhoto: {
         width: 80,
@@ -217,5 +328,34 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center",
         letterSpacing: 0.5,
+    },
+    loaderOverlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(255,255,255,0.5)",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 2,
+        borderRadius: 18,
+    },
+    cardPhotoContainer: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        marginBottom: 8,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f3f3f3",
+        borderWidth: 2,
+        borderColor: "#ddd",
+        overflow: "hidden",
+    },
+    cardPhotoPlaceholder: {
+        fontSize: 14,
+        textAlign: "center",
+        opacity: 0.6,
     },
 });
