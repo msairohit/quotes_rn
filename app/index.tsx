@@ -1,35 +1,81 @@
 import { router, Stack } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "./ThemeContext";
 
 export default function Index() {
+  const { theme, themeName, setTheme, themes } = useTheme();
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={styles.background}>
-        <View style={styles.container}>
+      <View style={[styles.background, { backgroundColor: theme.background }]}>
+        <View style={[styles.container, { backgroundColor: theme.container }]}>
           <Image
             source={require("../assets/images/quotes-logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Quotes App</Text>
-          <Text style={styles.description}>
+          <Text style={[styles.title, { color: theme.text }]}>Quotes App</Text>
+          <Text style={[styles.description, { color: theme.text }]}>
             Discover inspiring quotes to brighten your day and share with friends.
           </Text>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, styles.getQuoteButton]}
+              style={[styles.button, { backgroundColor: theme.button }]}
               onPress={() => router.push("/quote")}
             >
-              <Text style={styles.buttonText}>Get Quotes</Text>
+              <Text style={[styles.buttonText, { color: theme.buttonText }]}>Get Quotes</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, styles.viewBookmarksButton]}
+              style={[styles.button, { backgroundColor: theme.button }]}
               onPress={() => router.push("/bookmarks")}
             >
-              <Text style={styles.buttonText}>View Bookmarks</Text>
+              <Text style={[styles.buttonText, { color: theme.buttonText }]}>View Bookmarks</Text>
             </TouchableOpacity>
+            {/* Theme Switcher Dropdown */}
+            <View style={{ marginTop: 10, alignItems: "center" }}>
+              <TouchableOpacity
+                style={[styles.button, { backgroundColor: theme.button }]}
+                onPress={() => setDropdownVisible(true)}
+              >
+                <Text style={[styles.buttonText, { color: theme.buttonText }]}>
+                  Theme: {themeName} ▼
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                visible={dropdownVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setDropdownVisible(false)}
+              >
+                <View style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "rgba(0,0,0,0.3)"
+                }}>
+                  <View style={[styles.dropdownContainer, { backgroundColor: theme.container }]}>
+                    <ScrollView style={{ width: "100%" }}>
+                      {themes.map((t) => (
+                        <TouchableOpacity
+                          key={t}
+                          style={styles.dropdownItem}
+                          onPress={() => {
+                            setTheme(t);
+                            setDropdownVisible(false);
+                          }}
+                        >
+                          <Text style={{ color: theme.text, fontSize: 16, textAlign: "center", width: "100%" }}>{t}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                </View>
+              </Modal>
+            </View>
           </View>
         </View>
       </View>
@@ -40,13 +86,11 @@ export default function Index() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#f5f5f5", // Light background color
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
   container: {
-    backgroundColor: "white",
     borderRadius: 20,
     padding: 30,
     alignItems: "center",
@@ -65,7 +109,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: "white",
     fontWeight: "bold",
     textAlign: "center"
   },
@@ -78,11 +121,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333",
   },
   description: {
     fontSize: 16,
-    color: "#555",
     marginBottom: 30,
     textAlign: "center",
     paddingHorizontal: 20,
@@ -91,10 +132,26 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
   },
-  getQuoteButton: {
-    backgroundColor: "#3498db", // Blue
+  dropdownContent: {
+    flexGrow: 1,
   },
-  viewBookmarksButton: {
-    backgroundColor: "#2ecc71", // Green
+  dropdownContainer: {
+    maxHeight: 220,
+    // minWidth: 180,
+    width: 220,
+    borderRadius: 8,
+    paddingVertical: 8,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    zIndex: 999,
+  },
+  dropdownItem: {
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%", // Ensures item fills the dropdown width
   },
 });

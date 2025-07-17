@@ -1,8 +1,12 @@
+import { Ionicons } from '@expo/vector-icons'; // Import icons
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native'; // Remove Button
+import { useTheme } from '../ThemeContext';
+
 const App = () => {
+    const { theme } = useTheme();
     const [quote, setQuote] = useState('Loading...');
     const [author, setAuthor] = useState('');
     const [bookmarkedQuotes, setBookmarkedQuotes] = useState([]);
@@ -16,7 +20,10 @@ const App = () => {
             setAuthor(data.quoteAuthor);
             // secondQuote();
         } catch (error) {
-            console.error(error);
+            // console.error(error);
+            // Alert.alert('Error', 'Could not fetch a quote. Trying another source...');
+            console.log("Could not fetch a quote. Trying another source...")
+            secondQuote();
         }
     };
 
@@ -25,14 +32,14 @@ const App = () => {
             console.log("image quote")
             const response = await fetch('https://quotesondesign.com/wp-json/wp/v2/posts/?per_page=1');
             const data = await response.json();
-            console.log(data[0])
+            // console.log(data[0])
             const quote = data[0].content.rendered
                 .replace(/<\/?p>/g, '')
                 .replace(/^"|"$/g, '');
             const author = data[0].title.rendered;
             const image = data[0].featured_media; // Image ID
-            console.log(quote)
-            console.log(image);
+            // console.log(quote)
+            // console.log(image);
             setQuote(quote);
             setAuthor(author);
         } catch (error) {
@@ -78,24 +85,27 @@ const App = () => {
         fetchBookmarkedQuotes(); // Load bookmarks on app start
     }, []);
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Stack.Screen options={{ headerShown: false }} />
             <View>
-                <Text style={styles.title}>Quotess</Text>
+                <Text style={[styles.title, { color: theme.text }]}>Quotes</Text>
             </View>
-            <View style={styles.quoteBox}>
-                <Text style={styles.quote}>"{quote}"</Text>
-                <Text style={styles.author}>- {author}</Text>
+            <View style={[styles.quoteBox, { backgroundColor: theme.container }]}>
+                <Text style={[styles.quote, { color: theme.text }]}>"{quote}"</Text>
+                <Text style={[styles.author, { color: theme.text }]}>- {author}</Text>
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={fetchQuote}>
-                    <Text style={styles.buttonText}>New Quote</Text>
+                <TouchableOpacity style={styles.iconButton} onPress={fetchQuote}>
+                    <Ionicons name="refresh-circle-outline" size={50} color={theme.tint} />
+                    {/* <Text style={[styles.buttonText, { color: theme.text }]}>New</Text> */}
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={bookmarkQuote}>
-                    <Text style={styles.buttonText}>Bookmark</Text>
+                <TouchableOpacity style={styles.iconButton} onPress={bookmarkQuote}>
+                    <Ionicons name="bookmark-outline" size={50} color={theme.tint} />
+                    {/* <Text style={[styles.buttonText, { color: theme.text }]}>Bookmark</Text> */}
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={shareQuote}>
-                    <Text style={styles.buttonText}>Share</Text>
+                <TouchableOpacity style={styles.iconButton} onPress={shareQuote}>
+                    <Ionicons name="share-social-outline" size={50} color={theme.tint} />
+                    {/* <Text style={[styles.buttonText, { color: theme.text }]}>Share</Text> */}
                 </TouchableOpacity>
             </View>
         </View>
@@ -140,35 +150,26 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: 20,
     },
-    button: {
-        backgroundColor: '#3498db',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 25,
+    iconButton: {
         alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
     },
     buttonText: {
-        color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+        marginTop: 5,
     },
     bookmarkedTitle: {
         fontSize: 20,
     },
     title: {
-        paddingTop: 60,
-        paddingBottom: 20,
+        // paddingTop: 60,
+        // paddingBottom: 20,
+        marginTop: 20,
         paddingHorizontal: 16,
-        fontSize: 32,
+        fontSize: 30,
         fontWeight: 'bold',
         textAlign: 'center',
-        color: '#3498db',
+        // color: '#3498db',
     },
 
 });

@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Platform, UIManager } from 'react-native';
 import 'react-native-reanimated';
+import { ThemeProvider } from './ThemeContext'; // <-- Import ThemeProvider
 
 // Enable LayoutAnimation on Android
 if (
@@ -36,5 +37,9 @@ export default function RootLayout() {
         return null;
     }
 
-    return <Stack screenOptions={{ headerShown: false }} />;
+    return (
+        <ThemeProvider>
+            <Stack screenOptions={{ headerShown: false }} />
+        </ThemeProvider>
+    );
 }

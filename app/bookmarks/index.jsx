@@ -12,8 +12,10 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useTheme } from '../ThemeContext'; // <-- Add this import
 
 const Bookmarks = () => {
+    const { theme } = useTheme(); // <-- Use theme
     const [bookmarkedQuotes, setBookmarkedQuotes] = useState([]);
 
     const fetchBookmarkedQuotes = async () => {
@@ -97,10 +99,10 @@ const Bookmarks = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Stack.Screen options={{ headerShown: false }} />
-            <View style={styles.header}>
-                <Text style={styles.title}>Bookmarked Quotes</Text>
+            <View style={[styles.header, { backgroundColor: theme.background }]}>
+                <Text style={[styles.title, { color: theme.text }]}>Bookmarked Quotes</Text>
             </View>
             <Modal
                 animationType="slide"
@@ -109,15 +111,19 @@ const Bookmarks = () => {
                 onRequestClose={closeModal}
             >
                 <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
+                    <View style={[styles.modalView, { backgroundColor: theme.container }]}>
                         {selectedQuote && (
                             <>
-                                <Text style={styles.modalQuote}>"{selectedQuote.quote}"</Text>
-                                <Text style={styles.modalAuthor}>- {selectedQuote.author || 'Unknown'}</Text>
+                                <Text style={[styles.modalQuote, { color: theme.text }]}>
+                                    "{selectedQuote.quote}"
+                                </Text>
+                                <Text style={[styles.modalAuthor, { color: theme.text }]}>
+                                    - {selectedQuote.author || 'Unknown'}
+                                </Text>
                                 <View style={styles.modalButtonContainer}>
                                     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                                         <TouchableOpacity
-                                            style={styles.deleteButton}
+                                            style={[styles.deleteButton, { backgroundColor: "#e74c3c" }]}
                                             onPress={() => confirmDelete(selectedQuote)}
                                             onPressIn={animateButton}
                                         >
@@ -126,11 +132,11 @@ const Bookmarks = () => {
                                     </Animated.View>
                                     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                                         <TouchableOpacity
-                                            style={styles.closeButton}
+                                            style={[styles.closeButton, { backgroundColor: theme.button }]}
                                             onPress={closeModal}
                                             onPressIn={animateButton}
                                         >
-                                            <AntDesign name="close" size={24} color="white" />
+                                            <AntDesign name="close" size={24} color={theme.buttonText} />
                                         </TouchableOpacity>
                                     </Animated.View>
                                 </View>
@@ -147,17 +153,23 @@ const Bookmarks = () => {
                     <TouchableOpacity
                         onPress={() => openModal(item)}
                     >
-                        <View style={styles.bookmarkItem}>
-                            <Text style={styles.bookmarkQuote} numberOfLines={3}>"{item.quote}"</Text>
-                            <Text style={styles.bookmarkAuthor}>- {item.author || 'Unknown'}</Text>
+                        <View style={[styles.bookmarkItem, { backgroundColor: theme.container }]}>
+                            <Text style={[styles.bookmarkQuote, { color: theme.text }]} numberOfLines={3}>
+                                "{item.quote}"
+                            </Text>
+                            <Text style={[styles.bookmarkAuthor, { color: theme.text }]}>
+                                - {item.author || 'Unknown'}
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 )}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
                         <AntDesign name="book" size={48} color="#ced4da" />
-                        <Text style={styles.emptyText}>No Bookmarks Yet</Text>
-                        <Text style={styles.emptySubtext}>Your favorite quotes will appear here.</Text>
+                        <Text style={[styles.emptyText, { color: theme.text }]}>No Bookmarks Yet</Text>
+                        <Text style={[styles.emptySubtext, { color: theme.text }]}>
+                            Your favorite quotes will appear here.
+                        </Text>
                     </View>
                 )}
             />
