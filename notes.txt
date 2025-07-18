@@ -1,5 +1,5 @@
 (done) Move the show bookmark logic to new page.
-Option to add users photo and name and share the quote as an image.
+(done) Option to add users photo and name and share the quote as an image.
 (done) Update the UI to be more attractive specially the buttons.
 (done) Remove the index header.
 Ability to login.
@@ -10,3 +10,11 @@ search and integrate image quotes as well.
 different language quotes.
 Daily quote reminder.
 check if sharechat or similar has API and integrate to get the quotes from there.
+
+
+********
+npx expo prebuild (to generate the native android and ios code. not eject, still can use expo related stuff but can be used to build the apps locally.)
+npx expo run:android --variant debug (connect the mobile to laptop and run this cmd to build the app, generate the apk and install to the mobile with hot reload, connceted to dev server.)
+npx expo run:android --variant release (same as above but does not connect to metro and hence no need to run the server and no hot reloading.)
+expo start -d (if we just want to run the app on mobile. if not installed any new packages then this cmd is enough no need for above cmd.) 
+npx expo start -c
