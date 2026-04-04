@@ -1,4 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from "expo-image-picker";
+import { useSearchParams as _useSearchParams } from 'expo-router';
 import * as Sharing from "expo-sharing";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Dimensions, Image, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -19,7 +21,31 @@ export default function ShareQuote() {
     const quoteCardRef = useRef(null);
     const [cardHeight, setCardHeight] = useState(220); // default minimum
 
-    useEffect(() => { fetchQuote(); }, []);
+    const params = (_useSearchParams ? _useSearchParams() : {});
+    useEffect(() => {
+        const init = async () => {
+            try {
+                const pending = await AsyncStorage.getItem('pendingShare');
+                if (pending) {
+                    const obj = JSON.parse(pending);
+                    setQuote(obj.quote || '');
+                    setAuthor(obj.author || '');
+                    await AsyncStorage.removeItem('pendingShare');
+                    return;
+                }
+            } catch (e) {
+                console.error('Error reading pendingShare', e);
+            }
+            const { quote: qParam, author: aParam } = params || {};
+            if (qParam) {
+                setQuote(Array.isArray(qParam) ? qParam[0] : qParam);
+                setAuthor(Array.isArray(aParam) ? aParam[0] : aParam || '');
+            } else {
+                fetchQuote();
+            }
+        };
+        init();
+    }, []);
 
     const fetchQuote = async () => {
         setLoadingQuote(true);

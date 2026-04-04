@@ -35,21 +35,21 @@ modify the same app name in the logo text as well.
 store around 500 - 1k quotes in some DB or somewhere and get from there when the API fails to get the quotes.
 
 
-in home screen page:
+in home screen page: (done)
 logo is not required, just nice text is fine.
 Improve Button arrangement / layout
 theme selection popup is not good looking, improve it to look modern/attractive.
 Make theme persisted so when we open the app next time it should be the same theme.
 
 in quotes page
-give space between heading quotes and the body
-swap share and next button placement.
-change next button icon from refresh to next.
-change the alert style to a modern one when bookmark is clicked.
-change the "bookmark" icon to "bookmarked" icon once it is bookmarked, so that user doesnt get confused.
-If they click "bookmarked" icon it should be removed from the bookmarked list and icon should change back to "bookmark"
-Button to "share this quote with customization" which should go to "share your quote" page with this quote filled in.
-keep previos quote as well in cache/context and button to go back and see the previous quote.
+1.give space between heading quotes and the body
+2.Buttons should be previous and next (in one row), bookmark, share, "share this quote with customization" in another row below it.
+3.change next button icon from refresh to next.
+4.change the alert style to a modern one when bookmark is clicked.
+5.change the "bookmark" icon to "bookmarked" icon once it is bookmarked, so that user doesnt get confused.
+6.If they click "bookmarked" icon it should be removed from the bookmarked list and icon should change back to "bookmark"
+7.Button click of "share this quote with customization" which should go to "share your quote" page with this quote filled in.
+8.Once the quotes page is loaded, Store the quotes and make/sync the next, previous buttons to next or previous quotes from this collection saved in cache. where next will do a API call, get quote, show in UI, save in that local cache list and new back button will get from the cache list.
 
 in bookmarked quotes page
 change the alert style to a modern one when delete bookmark is clicked.
@@ -62,4 +62,8 @@ and if did not get within that time, stop the processing.
 
 
 In future
+show a disclaimer saying quotes found from online and this app does not own or suggest or represent or anything related to the content showed.
 language specific quotes categories (can select multiple languages)
+
+https://www.kaggle.com/datasets/marufchowdhury/quote-dataset
+https://www.kaggle.com/datasets/kimlongphmhong/full-tags-of-quotes-from-goodread
