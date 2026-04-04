@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 const themes = {
     Light: {
@@ -66,6 +67,8 @@ const themes = {
     },
 };
 
+const STORAGE_KEY = "@quotes_app_theme";
+
 const ThemeContext = createContext({
     theme: themes.Light,
     themeName: "Light",
@@ -77,12 +80,37 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const [themeName, setThemeName] = useState("Light");
+
+    // load persisted theme
+    useEffect(() => {
+        (async () => {
+            try {
+                const stored = await AsyncStorage.getItem(STORAGE_KEY);
+                if (stored && themes[stored]) {
+                    setThemeName(stored);
+                }
+            } catch (e) {
+                // ignore storage errors
+            }
+        })();
+    }, []);
+
+    const setTheme = useCallback(async (name: string) => {
+        if (!themes[name]) return;
+        try {
+            await AsyncStorage.setItem(STORAGE_KEY, name);
+        } catch (e) {
+            // ignore write errors
+        }
+        setThemeName(name);
+    }, []);
+
     return (
         <ThemeContext.Provider
             value={{
                 theme: themes[themeName],
                 themeName,
-                setTheme: setThemeName,
+                setTheme,
                 themes: Object.keys(themes),
             }}
         >

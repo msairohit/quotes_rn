@@ -18,3 +18,48 @@ npx expo run:android --variant debug (connect the mobile to laptop and run this 
 npx expo run:android --variant release (same as above but does not connect to metro and hence no need to run the server and no hot reloading.)
 expo start -d (if we just want to run the app on mobile. if not installed any new packages then this cmd is enough no need for above cmd.) 
 npx expo start -c
+
+************************
+
+For deploying app to play store:
+https://www.youtube.com/watch?v=WOKrelHPefc
+
+https://www.youtube.com/watch?v=qxO_8GFAliE - internal testing and next parts too in detail.
+
+*********************************
+
+quotes app improvements
+
+change app name
+modify the same app name in the logo text as well.
+store around 500 - 1k quotes in some DB or somewhere and get from there when the API fails to get the quotes.
+
+
+in home screen page:
+logo is not required, just nice text is fine.
+Improve Button arrangement / layout
+theme selection popup is not good looking, improve it to look modern/attractive.
+Make theme persisted so when we open the app next time it should be the same theme.
+
+in quotes page
+give space between heading quotes and the body
+swap share and next button placement.
+change next button icon from refresh to next.
+change the alert style to a modern one when bookmark is clicked.
+change the "bookmark" icon to "bookmarked" icon once it is bookmarked, so that user doesnt get confused.
+If they click "bookmarked" icon it should be removed from the bookmarked list and icon should change back to "bookmark"
+Button to "share this quote with customization" which should go to "share your quote" page with this quote filled in.
+keep previos quote as well in cache/context and button to go back and see the previous quote.
+
+in bookmarked quotes page
+change the alert style to a modern one when delete bookmark is clicked.
+add share button as well on the popup along with delete and close when one bookmarked quote is opened. It should go to the "share your quote" page with this particular quote.
+
+
+in share your quote page
+when add random background button is clicked, show 30 secs / 1 min timer with cancel option when the image is being fetched.
+and if did not get within that time, stop the processing.
+
+
+In future
+language specific quotes categories (can select multiple languages)
