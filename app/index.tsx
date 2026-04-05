@@ -1,11 +1,24 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack } from "expo-router";
-import { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "./ThemeContext";
 
 export default function Index() {
   const { theme, themeName, setTheme, themes } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [disclaimerVisible, setDisclaimerVisible] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const accepted = await AsyncStorage.getItem('@quotes_app_disclaimer_accepted');
+        if (!accepted) setDisclaimerVisible(true);
+      } catch (e) {
+        setDisclaimerVisible(true);
+      }
+    })();
+  }, []);
 
   // helper: map theme name to a representative color swatch
   const themesMapColor = (name: string) => {
@@ -95,6 +108,45 @@ export default function Index() {
                   <View style={styles.modalFooter}>
                     <TouchableOpacity style={[styles.footerButton, { backgroundColor: theme.button }]} onPress={() => setDropdownVisible(false)}>
                       <Text style={[styles.buttonText, { color: theme.buttonText }]}>Close</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              visible={disclaimerVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={() => {
+                /* prevent closing */
+                Alert.alert('Please accept to continue', 'You must accept the disclaimer to use the app.');
+              }}
+            >
+              <View style={styles.modalBackdrop}>
+                <View style={[styles.modalCard, { backgroundColor: theme.container }]}>
+                  <Text style={[styles.modalTitle, { color: theme.text, textAlign: 'center' }]}>Disclaimer</Text>
+                  <Text style={{ color: theme.text, marginTop: 8, marginBottom: 12, textAlign: 'center' }}>
+                    Quotes in this app are sourced from public online services. The app does not own, endorse, or guarantee the accuracy of the content. By continuing you agree that you understand and accept this.
+                  </Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                    <TouchableOpacity
+                      style={[styles.footerButton, { backgroundColor: '#ddd' }]}
+                      onPress={() => Alert.alert('Acceptance required', 'You must accept the disclaimer to use the app.')}
+                    >
+                      <Text style={{ color: '#333' }}>Decline</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.footerButton, { backgroundColor: theme.button }]}
+                      onPress={async () => {
+                        try {
+                          await AsyncStorage.setItem('@quotes_app_disclaimer_accepted', '1');
+                        } catch (e) {
+                          console.error('Could not persist disclaimer acceptance', e);
+                        }
+                        setDisclaimerVisible(false);
+                      }}
+                    >
+                      <Text style={[styles.buttonText, { color: theme.buttonText }]}>Accept</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

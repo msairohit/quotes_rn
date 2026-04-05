@@ -65,6 +65,7 @@ and if did not get within that time, stop the processing.
 In future
 show a disclaimer saying quotes found from online and this app does not own or suggest or represent or anything related to the content showed.
 language specific quotes categories (can select multiple languages)
+daily quote reminder
 
 https://www.kaggle.com/datasets/marufchowdhury/quote-dataset
 https://www.kaggle.com/datasets/kimlongphmhong/full-tags-of-quotes-from-goodread
