@@ -52,8 +52,9 @@ in quotes page
 8.Once the quotes page is loaded, Store the quotes and make/sync the next, previous buttons to next or previous quotes from this collection saved in cache. where next will do a API call, get quote, show in UI, save in that local cache list and new back button will get from the cache list.
 
 in bookmarked quotes page
+store bookmarked quotes in asyncstorage.
 change the alert style to a modern one when delete bookmark is clicked.
-add share button as well on the popup along with delete and close when one bookmarked quote is opened. It should go to the "share your quote" page with this particular quote.
+add share button as well on the popup along with delete and close when one bookmarked quote is selected. use the same share option from quotes page to show the popup asking share just text or customize and share.
 
 
 in share your quote page

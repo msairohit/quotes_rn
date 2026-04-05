@@ -1,12 +1,13 @@
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Animated,
     FlatList, LayoutAnimation,
     Modal,
+    Share,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -34,11 +35,15 @@ const Bookmarks = () => {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedQuote, setSelectedQuote] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [showShareOptions, setShowShareOptions] = useState(false);
+    const router = useRouter();
 
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
     const openModal = (item) => {
         setSelectedQuote(item);
+        setShowDeleteConfirm(false);
         setModalVisible(true);
     };
 
@@ -79,6 +84,7 @@ const Bookmarks = () => {
                 await AsyncStorage.setItem('bookmarkedQuotes', JSON.stringify(updatedBookmarks));
 
             }
+            setShowDeleteConfirm(false);
             closeModal();
         } catch (error) {
             console.error('Error deleting bookmark:', error);
@@ -87,15 +93,7 @@ const Bookmarks = () => {
     };
 
     const confirmDelete = (quote) => {
-        Alert.alert(
-            'Delete Bookmark',
-            'Are you sure you want to remove this bookmark?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Delete', onPress: () => deleteBookmark(quote), style: 'destructive' },
-            ],
-            { cancelable: true }
-        );
+        setShowDeleteConfirm(true);
     };
 
     return (
@@ -132,6 +130,15 @@ const Bookmarks = () => {
                                     </Animated.View>
                                     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                                         <TouchableOpacity
+                                            style={[styles.shareButton, { backgroundColor: theme.button }]}
+                                            onPress={() => setShowShareOptions(true)}
+                                            onPressIn={animateButton}
+                                        >
+                                            <Ionicons name="share-social-outline" size={22} color={theme.buttonText} />
+                                        </TouchableOpacity>
+                                    </Animated.View>
+                                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                                        <TouchableOpacity
                                             style={[styles.closeButton, { backgroundColor: theme.button }]}
                                             onPress={closeModal}
                                             onPressIn={animateButton}
@@ -140,6 +147,19 @@ const Bookmarks = () => {
                                         </TouchableOpacity>
                                     </Animated.View>
                                 </View>
+                                {showDeleteConfirm && (
+                                    <View style={styles.deleteConfirmRow}>
+                                        <Text style={[styles.deleteConfirmText, { color: theme.text }]}>Remove this bookmark?</Text>
+                                        <View style={styles.deleteConfirmButtons}>
+                                            <TouchableOpacity style={[styles.cancelBtn, { borderColor: theme.text }]} onPress={() => setShowDeleteConfirm(false)}>
+                                                <Text style={{ color: theme.text }}>Cancel</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={[styles.confirmDeleteBtn, { backgroundColor: '#e74c3c' }]} onPress={() => deleteBookmark(selectedQuote)}>
+                                                <Text style={{ color: '#fff' }}>Delete</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                )}
                             </>
                         )}
                     </View>
@@ -173,6 +193,29 @@ const Bookmarks = () => {
                     </View>
                 )}
             />
+            <Modal transparent visible={showShareOptions} animationType="fade" onRequestClose={() => setShowShareOptions(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.container }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Share Quote</Text>
+                        <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.button }]} onPress={async () => {
+                            setShowShareOptions(false);
+                            try { await Share.share({ message: `"${selectedQuote.quote}" - ${selectedQuote.author}` }); } catch (e) { console.error(e); }
+                        }}>
+                            <Text style={[styles.modalButtonText, { color: theme.buttonText }]}>Share just text</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.button }]} onPress={async () => {
+                            setShowShareOptions(false);
+                            try { await AsyncStorage.setItem('pendingShare', JSON.stringify({ quote: selectedQuote.quote, author: selectedQuote.author })); } catch (e) { console.error(e); }
+                            router.push('/share-quote');
+                        }}>
+                            <Text style={[styles.modalButtonText, { color: theme.buttonText }]}>Customize & share</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.modalCancel} onPress={() => setShowShareOptions(false)}>
+                            <Text style={[styles.modalButtonText, { color: theme.text }]}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -273,6 +316,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',  // Center content horizontally
         justifyContent: 'center',  // Center content vertically
     },
+    shareButton: {
+        backgroundColor: '#2ecc71',
+        padding: 12,
+        borderRadius: 50,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 8,
+    },
     closeButton: {
         backgroundColor: '#3498db',
         padding: 12,
@@ -303,6 +359,72 @@ const styles = StyleSheet.create({
         color: '#6c757d',
         marginTop: 8,
         textAlign: 'center',
+    },
+    deleteConfirmRow: {
+        marginTop: 16,
+        width: '100%',
+        alignItems: 'center',
+    },
+    deleteConfirmText: {
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    deleteConfirmButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '60%',
+    },
+    cancelBtn: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+    },
+    confirmDeleteBtn: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+    },
+    modalAction: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginVertical: 6,
+    },
+    modalCancel: {
+        marginTop: 8,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '85%',
+        borderRadius: 14,
+        padding: 18,
+        alignItems: 'center',
+        shadowOpacity: 0.18,
+        shadowRadius: 10,
+        elevation: 8,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        marginBottom: 12,
+    },
+    modalButton: {
+        width: '100%',
+        paddingVertical: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginVertical: 6,
+    },
+    modalButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
 
