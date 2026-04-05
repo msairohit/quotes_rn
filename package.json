@@ -1,5 +1,5 @@
 {
-  "name": "quotes-app",
+  "name": "quote-canvas",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {

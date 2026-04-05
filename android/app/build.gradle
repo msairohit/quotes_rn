@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.sai_rohit.quotesapp'
+    namespace 'com.sai_rohit.quotecanvas'
     defaultConfig {
-        applicationId 'com.sai_rohit.quotesapp'
+        applicationId 'com.sai_rohit.quotecanvas'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

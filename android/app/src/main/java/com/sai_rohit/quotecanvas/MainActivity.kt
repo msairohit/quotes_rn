@@ -1,4 +1,4 @@
-package com.sai_rohit.quotesapp
+package com.sai_rohit.quotecanvas
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

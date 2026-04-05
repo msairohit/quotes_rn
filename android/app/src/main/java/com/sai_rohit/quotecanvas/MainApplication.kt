@@ -1,4 +1,4 @@
-package com.sai_rohit.quotesapp
+package com.sai_rohit.quotecanvas
 
 import android.app.Application
 import android.content.res.Configuration

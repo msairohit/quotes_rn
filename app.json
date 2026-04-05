@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "quotes-app",
-    "slug": "quotes-app",
+    "name": "quote-canvas",
+    "slug": "quote-canvas",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/quotes-logo.png",
-    "scheme": "quotesapp",
+    "scheme": "quotecanvas",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -17,7 +17,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.sai_rohit.quotesapp"
+      "package": "com.sai_rohit.quotecanvas"
     },
     "web": {
       "bundler": "metro",
