@@ -18,6 +18,12 @@ export default function ShareQuote() {
     const [bgImage, setBgImage] = useState(null);
     const [loadingQuote, setLoadingQuote] = useState(false);
     const [loadingBg, setLoadingBg] = useState(false);
+    const [bgCountdown, setBgCountdown] = useState(0);
+    const [bgTimerVisible, setBgTimerVisible] = useState(false);
+    const bgIntervalRef = useRef(null);
+    const loadingBgRef = useRef(false);
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastText, setToastText] = useState('');
     const quoteCardRef = useRef(null);
     const [cardHeight, setCardHeight] = useState(220); // default minimum
 
@@ -45,6 +51,10 @@ export default function ShareQuote() {
             }
         };
         init();
+        return () => {
+            if (bgIntervalRef.current) { clearInterval(bgIntervalRef.current); bgIntervalRef.current = null; }
+            loadingBgRef.current = false;
+        };
     }, []);
 
     const fetchQuote = async () => {
@@ -73,18 +83,66 @@ export default function ShareQuote() {
         }
     };
 
-    const addBackgroundImage = async () => {
+
+
+    const showToast = (text) => {
+        setToastText(text);
+        setToastVisible(true);
+        setTimeout(() => setToastVisible(false), 1800);
+    };
+
+    const startBgFetch = async (seconds) => {
         setLoadingBg(true);
+        loadingBgRef.current = true;
+        setBgTimerVisible(true);
+        setBgCountdown(seconds);
+        // start countdown interval
+        if (bgIntervalRef.current) clearInterval(bgIntervalRef.current);
+        bgIntervalRef.current = setInterval(() => {
+            setBgCountdown(c => {
+                if (c <= 1) {
+                    clearInterval(bgIntervalRef.current);
+                    bgIntervalRef.current = null;
+                    // timeout reached
+                    if (loadingBgRef.current) {
+                        setLoadingBg(false);
+                        loadingBgRef.current = false;
+                        setBgTimerVisible(false);
+                        showToast('Background fetch timed out');
+                    }
+                    return 0;
+                }
+                return c - 1;
+            });
+        }, 1000);
+
         try {
             const unsplashUrl = `https://source.unsplash.com/featured/${screenWidth}x${Math.round(cardHeight)}/?motivation,success,life`;
             const response = await fetch(unsplashUrl, { method: "HEAD" });
-            if (response.ok) {
+            // only set if still loading (not timed out/cancelled)
+            if (loadingBgRef.current && response && response.ok) {
                 setBgImage(unsplashUrl);
+                setLoadingBg(false);
+                loadingBgRef.current = false;
+                setBgTimerVisible(false);
+                if (bgIntervalRef.current) { clearInterval(bgIntervalRef.current); bgIntervalRef.current = null; }
                 return;
             }
-            throw new Error("Unsplash failed");
-        } catch {
-            setBgImage(`https://picsum.photos/${screenWidth}/${Math.round(cardHeight)}?random=${Math.floor(Math.random() * 10000)}`);
+            if (loadingBgRef.current) {
+                // fallback
+                setBgImage(`https://picsum.photos/${screenWidth}/${Math.round(cardHeight)}?random=${Math.floor(Math.random() * 10000)}`);
+            }
+        } catch (err) {
+            if (loadingBgRef.current) {
+                setBgImage(`https://picsum.photos/${screenWidth}/${Math.round(cardHeight)}?random=${Math.floor(Math.random() * 10000)}`);
+            }
+        } finally {
+            if (loadingBgRef.current) {
+                setLoadingBg(false);
+                loadingBgRef.current = false;
+                setBgTimerVisible(false);
+            }
+            if (bgIntervalRef.current) { clearInterval(bgIntervalRef.current); bgIntervalRef.current = null; }
         }
     };
 
@@ -122,7 +180,7 @@ export default function ShareQuote() {
             behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
             <View style={styles.header}>
-                <Text style={[styles.title, { color: theme.text }]}>Share Your Quote</Text>
+                <Text style={[styles.title, { color: theme.text }]}>Share Customized Quote</Text>
             </View>
             <View style={styles.content}>
                 <TouchableOpacity style={[styles.photoPicker, { borderColor: theme.button }]} onPress={pickImage}>
@@ -148,7 +206,7 @@ export default function ShareQuote() {
                 />
                 <TouchableOpacity
                     style={[styles.bgButton, { backgroundColor: theme.button }]}
-                    onPress={addBackgroundImage}
+                    onPress={() => startBgFetch(30)}
                     disabled={loadingBg}
                 >
                     <Text style={[styles.bgButtonText, { color: theme.buttonText }]}>
@@ -164,6 +222,7 @@ export default function ShareQuote() {
                         {loadingBg ? "Loading..." : "Pick Your Own Background"}
                     </Text>
                 </TouchableOpacity>
+                {/* duration picker removed — default timeout 30s; cancel available on loader overlay */}
                 <View
                     style={[
                         styles.quoteCard,
@@ -180,6 +239,21 @@ export default function ShareQuote() {
                     {loadingBg && (
                         <View style={styles.loaderOverlay}>
                             <ActivityIndicator size="large" color={theme.button} />
+                            {bgTimerVisible && (
+                                <View style={styles.bgTimerBox}>
+                                    <Text style={[styles.bgTimerText, { color: theme.text }]}>{bgCountdown}s</Text>
+                                    <TouchableOpacity style={[styles.bgTimerCancel, { borderColor: theme.text }]} onPress={() => {
+                                        // cancel
+                                        if (bgIntervalRef.current) { clearInterval(bgIntervalRef.current); bgIntervalRef.current = null; }
+                                        setLoadingBg(false);
+                                        loadingBgRef.current = false;
+                                        setBgTimerVisible(false);
+                                        showToast('Background fetch cancelled');
+                                    }}>
+                                        <Text style={{ color: theme.text }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     )}
                     {bgImage && cardHeight > 0 && (
@@ -384,4 +458,25 @@ const styles = StyleSheet.create({
         textAlign: "center",
         opacity: 0.6,
     },
+    bgTimerBox: {
+        marginTop: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+    },
+    bgTimerText: {
+        fontSize: 16,
+        fontWeight: '700',
+        marginBottom: 6,
+    },
+    bgTimerCancel: {
+        borderWidth: 1,
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        borderRadius: 8,
+    },
+    /* duration picker styles removed — default 30s timeout used */
 });

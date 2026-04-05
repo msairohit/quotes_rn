@@ -19,6 +19,7 @@ export default function Index() {
       Orange: '#fb8c00',
       Pink: '#d81b60',
       Gray: '#757575',
+      Teal: '#00796b',
     };
     return map[name] || '#999';
   };

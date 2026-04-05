@@ -65,6 +65,13 @@ const themes = {
         button: "#757575",
         buttonText: "white",
     },
+    Teal: {
+        background: "#e0f2f1",
+        container: "#b2dfdb",
+        text: "#004d40",
+        button: "#00796b",
+        buttonText: "white",
+    },
 };
 
 const STORAGE_KEY = "@quotes_app_theme";
