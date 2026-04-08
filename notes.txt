@@ -63,9 +63,22 @@ and if did not get within that time, stop the processing.
 
 
 In future
-show a disclaimer saying quotes found from online and this app does not own or suggest or represent or anything related to the content showed.
+(done)show a disclaimer saying quotes found from online and this app does not own or suggest or represent or anything related to the content showed.
 language specific quotes categories (can select multiple languages)
-daily quote reminder
+daily quote reminder notification
 
 https://www.kaggle.com/datasets/marufchowdhury/quote-dataset
 https://www.kaggle.com/datasets/kimlongphmhong/full-tags-of-quotes-from-goodread
+
+
+***************
+give me proper readme file which will serve as the attractive point to installlers/users with all the features. no need for dev releated stuff.
+
+features:
+simple.
+no signin/signup process, direct to content.
+clean and neat UI (will attach image)
+with 10 color themes which applies to whole application.(will attach image)
+ability to bookmark quotes.
+View bookmarked quotes.(will attach image)
+ability to share the quotes as text and also customize it by adding photo, random, picker background image that resizes based on quote size, add custom greeting or text. then share as image.
