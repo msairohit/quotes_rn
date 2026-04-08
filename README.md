@@ -1,50 +1,34 @@
-# Welcome to your Expo app 👋
+# Quotes App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![App Logo](assets/images/quotes-logo.png)
 
-## Get started
+A clean, delightful, and highly customizable quotes app for daily inspiration.
+**NO sign-up**
+**NO advertizements**
+**NO user data collection**
 
-1. Install dependencies
+just pure content!
 
-   ```bash
-   npm install
-   ```
+## Highlights
+- **Simple & Direct:** Dive straight into content without any sign-up or login process.![main screen](assets/images/app_screenshots/main_screen.png)
+- **Stunning UI:** Experience a clean, neat, and intuitive user interface designed for beauty and ease of use.![quotes screen](assets/images/app_screenshots/quotes_page.png)
+- **Personalized Themes:** Choose from 10 vibrant color themes that instantly transform the entire application to match your style.![theme selection screen](assets/images/app_screenshots/theme_selection.png)
+- **Bookmark & Organize:** Easily bookmark your favorite quotes and revisit them anytime in a dedicated section.![bookmarked screen](assets/images/app_screenshots/bookmarked_quotes.png)
+- **Advanced Sharing:** Share quotes as text or create beautiful custom images with various backgrounds (photo, random, picker), auto-resizing text, and personalized greetings.![customize quote screen](assets/images/app_screenshots/customize_quote.png)
 
-2. Start the app
+## Features
+- Explore a curated collection of inspiring quotes.
+- View detailed quotes and author information.
+- Bookmark quotes for quick access.
+- Share quotes as text.
+- Create customizable image shares:
+    - Add a photo.
+    - Select a random background image.
+    - Choose a background from a picker.
+    - Image automatically resizes based on quote length.
+    - Add custom greeting or text to your shared image.
+- Simple, offline-friendly caching for a smooth experience.
 
-   ```bash
-   npx expo start
-   ```
+## Disclaimer
+Quotes in this app are sourced from public online services. The app does not own, endorse, or guarantee the accuracy of the content. By downloading / using this app, you agree that you understand and accept this.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
